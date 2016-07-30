@@ -2,4 +2,5 @@
 ## Title: |CFFFD5959Lei|CFFFF9C6Dzy|r Rune
 ## Notes: Just About Rune
 
+LeizyRune.xml
 LeizyRune.lua

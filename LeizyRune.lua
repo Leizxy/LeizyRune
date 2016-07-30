@@ -1,45 +1,125 @@
 leizyrunes={}
 --职业
 --local class = select(2,UnitClass("player"))
-leizyrunes_mainframe = CreatFrame("Frame",nil,UIParent)
---leizyrunes_mainframe:SetSize(40,40)
---leizyrunes_mainframe:SetPoint("CENTER",UIParent)
-
-
---OnLoad
-function leizyrunes_mainframe:OnLoad(self)
-
-	self:RegisterEvent("PLAYER_LOGIN")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
---	self:RegisterEvent
-
-end
-
---OnEvent
-function leizyrunes_mainframe:OnEvent(self,event,arg1,...)
+leizyrunes.R=85
+function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
-		Print("Hello DK")
+		--Print("DK")
 		if event == "PLAYER_LOGIN" then
-			Print("Hello LeizyRune")
+			Print("Hello player")
 			leizyrunes_init()
+		elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
+			Print("专精切换")
+			--leizyrunes_mainframe.Hide()
+			--leizyrunes_init()
+			leizyrunes_setRunesTexture()
 		end
 	end
 end
 
---OnUpdate
-function leizyrunes_mainframe:OnUpdate()
-	--TODO
-end
-
+--初始化符文
 function leizyrunes_init()
 	Print("leizyrunes init")
+	Print(math.pi)
 	--TODO 符文初始化
+	leizyrunes.runes = {1,1,1,1,1,1}
+	leizyrunes_setMainFrame()
+	--单个frame
+	test = "123"
+	leizyrunes_runeFrame = {}
+	leizyrunes_runeTexture = {}
+	leizyrunes_runeCDText = {}
+	for i = 1,6 do
+		leizyrunes_runeFrame[i] = CreateFrame("Frame",nil,leizyrunes_mainframe)
+		leizyrunes_runeTexture[i] = leizyrunes_runeFrame[i]:CreateTexture(nil,"ARTWORK")
+		leizyrunes_runeCDText[i] = leizyrunes_runeFrame[i]:CreateFontString(nil,"ARTWORK")
+	end
+	leizyrunes_setRunesFrame()
+	leizyrunes_setRunesTexture()
+	leizyrunes_setRunesCDText()
+	--test
+
+end
+-- 设置主Frame
+function leizyrunes_setMainFrame()
+	Print("leizyrunes_setMainFrame")
+	--leizyrunes_mainframe = CreateFrame("Frame",LeizyRuneFrame,UIParent)
+	--leizyrunes_mainframe:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8", edgeFile="", tile = false, edgeSize=1})
+	--leizyrunes_mainframe:SetBackdropColor(.5,.5,.5,.5)
+	--leizyrunes_mainframe:SetBackdropBorderColor(1,0,1,1)
+	leizyrunes_mainframe:SetWidth(200)
+	leizyrunes_mainframe:SetHeight(100)
+	leizyrunes_mainframe:SetPoint("CENTER",UIParent,"CENTER",0,-30)
+	
+	--test Texture&Text
+	--[[
+	leizyrunes_mainframe.Texture = leizyrunes_mainframe:CreateTexture(nil,"ARTWORK")
+	leizyrunes_mainframe.Texture:SetTexture(setTextureOfSpec(getSpec()))	
+	leizyrunes_mainframe.Texture:SetPoint("CENTER",leizyrunes_mainframe,0,0)
+	leizyrunes_mainframe.Text = leizyrunes_mainframe:CreateFontString(nil,"OVERLAY")
+	leizyrunes_mainframe.Text:SetFont("Fonts\\ARHei.ttf",16,"THINOUTLINE")
+	leizyrunes_mainframe.Text:SetText("|cffff0000Lei|cff00ff00zy|cff0000ffRunes")
+	leizyrunes_mainframe.Text:SetPoint("CENTER",leizyrunes_mainframe,0,0)]]
+	
 	
 end
 
 
+--设置单个符文
+function leizyrunes_setRunesFrame()
+	for i=1,6 do
+		Print("leizyrunes_runeFrame"..i)
+		--leizyrunes_runeFrame[i]:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8", edgeFile="", tile = false, edgeSize=1})
+		--leizyrunes_runeFrame[i]:SetBackdropColor(1,0,0,.8)
+		--leizyrunes_runeFrame[i]:SetBackdropBorderColor(1,0,1,1)
+		leizyrunes_runeFrame[i]:SetWidth(20)
+		leizyrunes_runeFrame[i]:SetHeight(20)
+		leizyrunes_runeFrame[i]:SetPoint("CENTER",leizyrunes_mainframe,"CENTER",leizyrunes.R*math.sin(math.rad(30*(i-1)-75)),-leizyrunes.R*math.cos(math.rad(30*(i-1)-75)))
+		--leizyrunes_runeFrame[i]:SetPoint("CENTER",leizyrunes_mainframe,"CENTER",i*30-105,0)
+	end
 
+end
+--单个符文材质
+function leizyrunes_setRunesTexture()
+	for i=1,6 do
+		Print("leizyrunes_runeTexture"..i)
+		leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
+		leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
+	end
+end
+--符文CD文字
+function leizyrunes_setRunesCDText()
+	for i=1,6 do
+		Print("leizyrunes_runeCDText"..i)
+		leizyrunes_runeCDText[i]:SetFont("Fonts\\ARHei.ttf",16,"THINOUTLINE")
+		leizyrunes_runeCDText[i]:SetText("5")
+		leizyrunes_runeCDText[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",2,2)
+	end
+end
+--获取专精
+function getSpec()
+	local spec = 0
+	if GetSpecialization() ~= nil then
+		if GetSpecializationInfo(GetSpecialization()) ~= nil then
+			spec = select(1,GetSpecializationInfo(GetSpecialization()))
+		else
+			Print("GetSpecializationInfo is nil")
+		end
+	else
+		Print("GetSpecialization is nil")
+	end
+	return spec
+end
+--根据专精换材质
+function setTextureOfSpec(num)
+	local texture = ""
+	if num == 250 then texture = "Interface\\AddOns\\LeizyRune\\textures\\blood" 
+	elseif num == 251 then texture = "Interface\\AddOns\\LeizyRune\\textures\\frost"
+	elseif num == 252 then texture = "Interface\\AddOns\\LeizyRune\\textures\\unholy"
+	end
+	return texture
+end
 --log
 function Print(str)
-	DEFAUT_CHAT_FRAME:AddMessage(str)
+	DEFAULT_CHAT_FRAME:AddMessage(str)
 end
