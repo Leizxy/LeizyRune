@@ -2,6 +2,23 @@ leizyrunes={}
 --职业
 --local class = select(2,UnitClass("player"))
 leizyrunes.R=85
+--记录符文CD
+leizyrunes.runeCDs = {0,0,0,0,0,0}
+--符文放缩值
+leizyrunes.Scale = 0.8
+--CD颜色
+leizyrunes.Color = {"|cff88ff00","|cffff0000"}
+--CD字大小
+leizyrunes.FontSize = 19
+--CD时Alpha值
+leizyrunes.Alpha = 0.5
+--Position(以屏幕中心点为原点)
+leizyrunes.PositionX = 0
+leizyrunes.PositionY = -30
+
+--logboolean
+isShowLog = false
+
 function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
 		--Print("DK")
@@ -16,7 +33,9 @@ function lr_onEvent(self, event, arg1, ...)
 		end
 	end
 end
-
+function lr_onUpdate()
+	setRuneCDs()
+end
 --初始化符文
 function leizyrunes_init()
 	Print("leizyrunes init")
@@ -49,7 +68,7 @@ function leizyrunes_setMainFrame()
 	--leizyrunes_mainframe:SetBackdropBorderColor(1,0,1,1)
 	leizyrunes_mainframe:SetWidth(200)
 	leizyrunes_mainframe:SetHeight(100)
-	leizyrunes_mainframe:SetPoint("CENTER",UIParent,"CENTER",0,-30)
+	leizyrunes_mainframe:SetPoint("CENTER",UIParent,"CENTER",leizyrunes.PositionX,leizyrunes.PositionY)
 	
 	--test Texture&Text
 	--[[
@@ -74,6 +93,7 @@ function leizyrunes_setRunesFrame()
 		--leizyrunes_runeFrame[i]:SetBackdropBorderColor(1,0,1,1)
 		leizyrunes_runeFrame[i]:SetWidth(20)
 		leizyrunes_runeFrame[i]:SetHeight(20)
+		leizyrunes_runeFrame[i]:SetScale(leizyrunes.Scale)
 		leizyrunes_runeFrame[i]:SetPoint("CENTER",leizyrunes_mainframe,"CENTER",leizyrunes.R*math.sin(math.rad(30*(i-1)-75)),-leizyrunes.R*math.cos(math.rad(30*(i-1)-75)))
 		--leizyrunes_runeFrame[i]:SetPoint("CENTER",leizyrunes_mainframe,"CENTER",i*30-105,0)
 	end
@@ -83,6 +103,7 @@ end
 function leizyrunes_setRunesTexture()
 	for i=1,6 do
 		Print("leizyrunes_runeTexture"..i)
+		--leizyrunes_runeTexture[i]:SetScale(1.1)
 		leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
 		leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
 	end
@@ -91,9 +112,35 @@ end
 function leizyrunes_setRunesCDText()
 	for i=1,6 do
 		Print("leizyrunes_runeCDText"..i)
-		leizyrunes_runeCDText[i]:SetFont("Fonts\\ARHei.ttf",16,"THINOUTLINE")
-		leizyrunes_runeCDText[i]:SetText("5")
-		leizyrunes_runeCDText[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",2,2)
+		leizyrunes_runeCDText[i]:SetFont("Fonts\\ARHei.ttf",leizyrunes.FontSize,"THINOUTLINE")
+		--leizyrunes_runeCDText[i]:SetText("5")
+		
+		leizyrunes_runeCDText[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",2,1)
+	end
+end
+--CD剩余时间
+function setRuneCDs()
+	for i=1,6 do
+		local starttime, spellduration, runeReady = GetRuneCooldown(i)
+		if runeReady then
+			leizyrunes.runeCDs[i]=0
+			leizyrunes_runeCDText[i]:SetText("")
+		else
+			local currentTime = GetTime()
+			local durationLeft = starttime + spellduration - currentTime
+			leizyrunes.runeCDs[i] = durationLeft
+			if durationLeft > 5 then
+				leizyrunes_runeCDText[i]:SetText(leizyrunes.Color[1]..math.ceil(durationLeft))
+			else
+				leizyrunes_runeCDText[i]:SetText(leizyrunes.Color[2]..string.sub(durationLeft,1,3))
+			end
+		end
+		--透明度改变
+		if leizyrunes.runeCDs[i] > 0 then
+			leizyrunes_runeTexture[i]:SetAlpha(leizyrunes.Alpha)
+		else
+			leizyrunes_runeTexture[i]:SetAlpha(1)
+		end
 	end
 end
 --获取专精
@@ -121,5 +168,7 @@ function setTextureOfSpec(num)
 end
 --log
 function Print(str)
-	DEFAULT_CHAT_FRAME:AddMessage(str)
+	if isShowLog then
+		DEFAULT_CHAT_FRAME:AddMessage(str)
+	end
 end
