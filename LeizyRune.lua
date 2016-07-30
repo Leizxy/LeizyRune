@@ -20,7 +20,7 @@ leizyrunes.infight = false
 --是否在宠物对战
 leizyrunes.inPetBattle = false
 --logboolean
-isShowLog = true
+isShowLog = false
 
 function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
