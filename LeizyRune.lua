@@ -15,9 +15,12 @@ leizyrunes.Alpha = 0.5
 --Position(以屏幕中心点为原点)
 leizyrunes.PositionX = 0
 leizyrunes.PositionY = -30
-
+--是否进站斗
+leizyrunes.infight = false
+--是否在宠物对战
+leizyrunes.inPetBattle = false
 --logboolean
-isShowLog = false
+isShowLog = true
 
 function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
@@ -30,6 +33,30 @@ function lr_onEvent(self, event, arg1, ...)
 			--leizyrunes_mainframe.Hide()
 			--leizyrunes_init()
 			leizyrunes_setRunesTexture()
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			leizyrunes.infight = false
+
+		elseif event == "PLAYER_REGEN_DISABLED" then
+			leizyrunes.infight = true
+
+		elseif event == "PET_BATTLE_OPENING_START" then
+			leizyrunes.inPetBattle = true
+			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,0)
+		elseif event == "PET_BATTLE_CLOSE" then
+			leizyrunes.inPetBattle = false
+			UIFrameFadeIn(leizyrunes_mainframe,1,0,1.0)
+		elseif event == "UNIT_ENTERED_VEHICLE" then
+			if leizyrunes.infight then
+				UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
+			else
+				UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
+			end
+		elseif event == "UNIT_EXITED_VEHICLE" then
+			if leizyrunes.infight then
+				UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
+			else
+				UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+			end
 		end
 	end
 end
@@ -136,12 +163,22 @@ function setRuneCDs()
 			end
 		end
 		--透明度改变
-		if leizyrunes.runeCDs[i] > 0 then
-			leizyrunes_runeTexture[i]:SetAlpha(leizyrunes.Alpha)
+		if leizyrunes.runeCDs[i] > 0 or not(leizyrunes.infight) then
+			changeAlpha(leizyrunes_runeTexture[i],leizyrunes.Alpha)
 		else
-			leizyrunes_runeTexture[i]:SetAlpha(1)
+			--leizyrunes_runeTexture[i]:SetAlpha(1)
+			changeAlpha(leizyrunes_runeTexture[i],1)
 		end
 	end
+end
+--改变透明度
+function changeAlpha(frame,alpha)
+	--[[if leizyrunes.runeCDs[num] > 0 then
+		leizyrunes_runeTexture[num]:SetAlpha(leizyrunes.Alpha)
+	else
+		leizyrunes_runeTexture[num]:SetAlpha(1)
+	end]]
+	frame:SetAlpha(alpha)
 end
 --获取专精
 function getSpec()
@@ -156,6 +193,11 @@ function getSpec()
 		Print("GetSpecialization is nil")
 	end
 	return spec
+end
+--渐隐、渐现动画
+function frameFade(frame,timetoFade,startAlpha,endAlpha)
+	UIFrameFadeIn(frame,timetoFade,startAlpha,endAlpha)
+	--UIFrameFadeOut(frame,timetoFade,startAlpha,endAlpha)
 end
 --根据专精换材质
 function setTextureOfSpec(num)
