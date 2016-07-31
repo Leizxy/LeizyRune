@@ -35,16 +35,18 @@ function lr_onEvent(self, event, arg1, ...)
 			leizyrunes_setRunesTexture()
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			leizyrunes.infight = false
-
+			--UIFrameFadeIn(leizyrunes_mainframe,0.6,leizyrunes.Alpha,1.0)
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			leizyrunes.infight = true
-
+			--UIFrameFadeIn(leizyrunes_mainframe,1,1.0,leizyrunes.Alpha)
 		elseif event == "PET_BATTLE_OPENING_START" then
-			leizyrunes.inPetBattle = true
-			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,0)
+			--leizyrunes.inPetBattle = true
+			UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
 		elseif event == "PET_BATTLE_CLOSE" then
-			leizyrunes.inPetBattle = false
-			UIFrameFadeIn(leizyrunes_mainframe,1,0,1.0)
+			--leizyrunes.inPetBattle = false
+			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+		elseif event == "PLAYER_ENTER_WORLD" then
+			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
 		elseif event == "UNIT_ENTERED_VEHICLE" then
 			if leizyrunes.infight then
 				UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
@@ -163,7 +165,9 @@ function setRuneCDs()
 			end
 		end
 		--透明度改变
-		if leizyrunes.runeCDs[i] > 0 or not(leizyrunes.infight) then
+		if leizyrunes.runeCDs[i] > 0 
+		or not(leizyrunes.infight)
+		then
 			changeAlpha(leizyrunes_runeTexture[i],leizyrunes.Alpha)
 		else
 			--leizyrunes_runeTexture[i]:SetAlpha(1)
