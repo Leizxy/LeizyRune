@@ -21,7 +21,9 @@ leizyrunes.infight = false
 leizyrunes.inPetBattle = false
 --logboolean
 -- isShowLog = false
-
+if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
+	return
+end
 function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
 		---- print("DK")
@@ -35,11 +37,11 @@ function lr_onEvent(self, event, arg1, ...)
 			leizyrunes_setRunesTexture()
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			leizyrunes.infight = false
-			print("outfight")
+			-- print("outfight")
 			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,leizyrunes.Alpha)
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			leizyrunes.infight = true
-			print("infight")
+			-- print("infight")
 			UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
 		elseif event == "PET_BATTLE_OPENING_START" then
 			--leizyrunes.inPetBattle = true
