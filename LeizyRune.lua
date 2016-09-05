@@ -24,50 +24,29 @@ leizyrunes.inPetBattle = false
 if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
 	return
 end
-function lr_onEvent(self, event, arg1, ...)
-	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
-		---- print("DK")
-		if event == "PLAYER_LOGIN" then
-			-- print("Hello player")
-			leizyrunes_init()
-		elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
-			-- print("专精切换")
-			--leizyrunes_mainframe.Hide()
-			--leizyrunes_init()
-			leizyrunes_setRunesTexture()
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			leizyrunes.infight = false
-			-- print("outfight")
-			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,leizyrunes.Alpha)
-		elseif event == "PLAYER_REGEN_DISABLED" then
-			leizyrunes.infight = true
-			-- print("infight")
-			UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
-		elseif event == "PET_BATTLE_OPENING_START" then
-			--leizyrunes.inPetBattle = true
-			UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
-		elseif event == "PET_BATTLE_CLOSE" then
-			--leizyrunes.inPetBattle = false
-			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
-		elseif event == "PLAYER_ENTER_WORLD" then
-			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
-		elseif event == "UNIT_ENTERED_VEHICLE" then
-			if leizyrunes.infight then
-				UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
-			else
-				UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
-			end
-		elseif event == "UNIT_EXITED_VEHICLE" then
-			if leizyrunes.infight then
-				UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
-			else
-				UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
-			end
+
+--获取专精
+function getSpec()
+	local spec = 0
+	if GetSpecialization() ~= nil then
+		if GetSpecializationInfo(GetSpecialization()) ~= nil then
+			spec = select(1,GetSpecializationInfo(GetSpecialization()))
+		else
+			-- print("GetSpecializationInfo is nil")
 		end
+	else
+		-- print("GetSpecialization is nil")
 	end
+	return spec
 end
-function lr_onUpdate()
-	setRuneCDs()
+--根据专精换材质
+function setTextureOfSpec(num)
+	local texture = ""
+	if num == 250 then texture = "Interface\\AddOns\\LeizyRune\\textures\\blood" 
+	elseif num == 251 then texture = "Interface\\AddOns\\LeizyRune\\textures\\frost"
+	elseif num == 252 then texture = "Interface\\AddOns\\LeizyRune\\textures\\unholy"
+	end
+	return texture
 end
 --初始化符文
 function leizyrunes_init()
@@ -151,6 +130,15 @@ function leizyrunes_setRunesCDText()
 		leizyrunes_runeCDText[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",2,1)
 	end
 end
+--改变透明度
+function changeAlpha(frame,alpha)
+	--[[if leizyrunes.runeCDs[num] > 0 then
+		leizyrunes_runeTexture[num]:SetAlpha(leizyrunes.Alpha)
+	else
+		leizyrunes_runeTexture[num]:SetAlpha(1)
+	end]]
+	frame:SetAlpha(alpha)
+end
 --CD剩余时间
 function setRuneCDs()
 	for i=1,6 do
@@ -160,12 +148,10 @@ function setRuneCDs()
 			leizyrunes_runeCDText[i]:SetText("")
 		else
 			local currentTime = GetTime()
-			local durationLeft = starttime + spellduration - currentTime
+			local durationLeft = (starttime + spellduration - currentTime)<= 0 and 0 or (starttime + spellduration - currentTime)
 			leizyrunes.runeCDs[i] = durationLeft
 			if durationLeft > 5 then
 				leizyrunes_runeCDText[i]:SetText(leizyrunes.Color[1]..math.ceil(durationLeft))
-			-- elseif durationLeft <= 0.1 then
-				-- leizyrunes_runeCDText[i]:SetText("")
 			else
 				leizyrunes_runeCDText[i]:SetText(leizyrunes.Color[3]..math.ceil(durationLeft))
 			end
@@ -179,46 +165,62 @@ function setRuneCDs()
 		end
 	end
 end
---改变透明度
-function changeAlpha(frame,alpha)
-	--[[if leizyrunes.runeCDs[num] > 0 then
-		leizyrunes_runeTexture[num]:SetAlpha(leizyrunes.Alpha)
-	else
-		leizyrunes_runeTexture[num]:SetAlpha(1)
-	end]]
-	frame:SetAlpha(alpha)
-end
---获取专精
-function getSpec()
-	local spec = 0
-	if GetSpecialization() ~= nil then
-		if GetSpecializationInfo(GetSpecialization()) ~= nil then
-			spec = select(1,GetSpecializationInfo(GetSpecialization()))
-		else
-			-- print("GetSpecializationInfo is nil")
-		end
-	else
-		-- print("GetSpecialization is nil")
-	end
-	return spec
-end
+
+
 --渐隐、渐现动画
-function frameFade(frame,timetoFade,startAlpha,endAlpha)
-	UIFrameFadeIn(frame,timetoFade,startAlpha,endAlpha)
-	--UIFrameFadeOut(frame,timetoFade,startAlpha,endAlpha)
-end
---根据专精换材质
-function setTextureOfSpec(num)
-	local texture = ""
-	if num == 250 then texture = "Interface\\AddOns\\LeizyRune\\textures\\blood" 
-	elseif num == 251 then texture = "Interface\\AddOns\\LeizyRune\\textures\\frost"
-	elseif num == 252 then texture = "Interface\\AddOns\\LeizyRune\\textures\\unholy"
-	end
-	return texture
-end
+-- function frameFade(frame,timetoFade,startAlpha,endAlpha)
+	-- UIFrameFadeIn(frame,timetoFade,startAlpha,endAlpha)
+	-- UIFrameFadeOut(frame,timetoFade,startAlpha,endAlpha)
+-- end
+
 --log
 -- function -- print(str)
 	-- if isShowLog then
 		-- DEFAULT_CHAT_FRAME:AddMessage(str)
 	-- end
 -- end
+function lr_onEvent(self, event, arg1, ...)
+	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
+		---- print("DK")
+		if event == "PLAYER_LOGIN" then
+			-- print("Hello player")
+			leizyrunes_init()
+		elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
+			-- print("专精切换")
+			--leizyrunes_mainframe.Hide()
+			--leizyrunes_init()
+			leizyrunes_setRunesTexture()
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			leizyrunes.infight = false
+			-- print("outfight")
+			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,leizyrunes.Alpha)
+		elseif event == "PLAYER_REGEN_DISABLED" then
+			leizyrunes.infight = true
+			-- print("infight")
+			UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
+		elseif event == "PET_BATTLE_OPENING_START" then
+			--leizyrunes.inPetBattle = true
+			UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
+		elseif event == "PET_BATTLE_CLOSE" then
+			--leizyrunes.inPetBattle = false
+			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+		elseif event == "PLAYER_ENTER_WORLD" then
+			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+		elseif event == "UNIT_ENTERED_VEHICLE" then
+			if leizyrunes.infight then
+				UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
+			else
+				UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
+			end
+		elseif event == "UNIT_EXITED_VEHICLE" then
+			if leizyrunes.infight then
+				UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
+			else
+				UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+			end
+		end
+	end
+end
+function lr_onUpdate()
+	setRuneCDs()
+end
