@@ -118,8 +118,8 @@ function leizyrunes_setRunesTexture()
 	for i=1,6 do
 		-- print("leizyrunes_runeTexture"..i)
 		--leizyrunes_runeTexture[i]:SetScale(1.1)
-		-- leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
-		-- leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
+		leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
+		leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
 	end
 end
 --符文CD文字
