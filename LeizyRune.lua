@@ -21,6 +21,9 @@ leizyrunes.infight = false
 leizyrunes.inPetBattle = false
 --logboolean
 -- isShowLog = false
+local leizyrunes_runeFrame
+local leizyrunes_runeTexture
+local leizyrunes_runeCDText
 if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
 	return
 end
@@ -118,8 +121,10 @@ function leizyrunes_setRunesTexture()
 	for i=1,6 do
 		-- print("leizyrunes_runeTexture"..i)
 		--leizyrunes_runeTexture[i]:SetScale(1.1)
-		leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
-		leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
+		if leizyrunes_runeTexture ~= nil then
+			leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
+			leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
+		end
 	end
 end
 --符文CD文字
@@ -190,7 +195,7 @@ function lr_onEvent(self, event, arg1, ...)
 		elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
 			-- print("专精切换")
 			--leizyrunes_mainframe.Hide()
-			--leizyrunes_init()
+			-- leizyrunes_init()
 			leizyrunes_setRunesTexture()
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			leizyrunes.infight = false
