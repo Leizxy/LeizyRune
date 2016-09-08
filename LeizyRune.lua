@@ -119,8 +119,6 @@ end
 --单个符文材质
 function leizyrunes_setRunesTexture()
 	for i=1,6 do
-		-- print("leizyrunes_runeTexture"..i)
-		--leizyrunes_runeTexture[i]:SetScale(1.1)
 		if leizyrunes_runeTexture ~= nil then
 			leizyrunes_runeTexture[i]:SetTexture(setTextureOfSpec(getSpec()))
 			leizyrunes_runeTexture[i]:SetPoint("CENTER",leizyrunes_runeFrame[i],"CENTER",0,0)
@@ -139,11 +137,6 @@ function leizyrunes_setRunesCDText()
 end
 --改变透明度
 function changeAlpha(frame,alpha)
-	--[[if leizyrunes.runeCDs[num] > 0 then
-		leizyrunes_runeTexture[num]:SetAlpha(leizyrunes.Alpha)
-	else
-		leizyrunes_runeTexture[num]:SetAlpha(1)
-	end]]
 	frame:SetAlpha(alpha)
 end
 --CD剩余时间
