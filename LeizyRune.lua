@@ -181,43 +181,35 @@ end
 -- end
 function lr_onEvent(self, event, arg1, ...)
 	if select(2,UnitClass("player")) == "DEATHKNIGHT" then
-		---- print("DK")
 		if event == "PLAYER_LOGIN" then
-			-- print("Hello player")
 			leizyrunes_init()
 		elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
-			-- print("专精切换")
-			--leizyrunes_mainframe.Hide()
-			-- leizyrunes_init()
 			leizyrunes_setRunesTexture()
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			leizyrunes.infight = false
-			-- print("outfight")
+			
 			UIFrameFadeIn(leizyrunes_mainframe,1,1.0,leizyrunes.Alpha)
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			leizyrunes.infight = true
-			-- print("infight")
 			UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
 		elseif event == "PET_BATTLE_OPENING_START" then
-			--leizyrunes.inPetBattle = true
 			UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
 		elseif event == "PET_BATTLE_CLOSE" then
-			--leizyrunes.inPetBattle = false
 			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
 		elseif event == "PLAYER_ENTER_WORLD" then
 			UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
 		elseif event == "UNIT_ENTERED_VEHICLE" then
-			if leizyrunes.infight then
-				UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
-			else
-				UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
-			end
+			-- if leizyrunes.infight then
+				-- UIFrameFadeIn(leizyrunes_mainframe,0.5,1.0,leizyrunes.Alpha)
+			-- else
+				-- UIFrameFadeIn(leizyrunes_mainframe,1,leizyrunes.Alpha,0)
+			-- end
 		elseif event == "UNIT_EXITED_VEHICLE" then
-			if leizyrunes.infight then
-				UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
-			else
-				UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
-			end
+			-- if leizyrunes.infight then
+				-- UIFrameFadeIn(leizyrunes_mainframe,0.5,leizyrunes.Alpha,1.0)
+			-- else
+				-- UIFrameFadeIn(leizyrunes_mainframe,1,0,leizyrunes.Alpha)
+			-- end
 		end
 	end
 end
