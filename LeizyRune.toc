@@ -1,9 +1,10 @@
 ## Interface: 70000
 ## Title: |CFFFD5959Lei|CFFFF9C6Dzy|r Rune
 ## Notes: Leizy's Deathknight Rune Addon
+## SavedVariables: testDB
+## SavedVariablesPerCharacter: testPerDB
 
 
 LeizyRune.xml
 LeizyRune.lua
-
-test.lua
+##test.lua
