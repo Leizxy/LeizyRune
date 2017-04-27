@@ -9,3 +9,4 @@
 ##LeizyRune.lua
 ##test.lua
 myrune.lua
+LeizyPower.lua
