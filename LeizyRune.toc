@@ -5,6 +5,7 @@
 ## SavedVariablesPerCharacter: testPerDB
 
 
-LeizyRune.xml
-LeizyRune.lua
+##LeizyRune.xml
+##LeizyRune.lua
 ##test.lua
+myrune.lua
