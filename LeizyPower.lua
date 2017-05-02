@@ -7,7 +7,8 @@
 --
 
 local LeizyRune, ns = ...
-
+local updatetime = .25
+local update = 0
 local powerdatas = {}
 powerdatas.x = 0
 powerdatas.y = -125
@@ -32,8 +33,10 @@ powerdatas.powercolor = {
     ['POWER_TYPE_OOZE'] = { 0.76, 1, 0 },
     ['POWER_TYPE_BLOOD_POWER'] = { 0.7, 0, 1 },
 }
+powerdatas.barWidth = 180
+powerdatas.barHeight = 8
 
-local leizypower_MainFrame = CreateFrame("Frame", nil, UIParent)
+local leizypower_MainFrame = CreateFrame("Frame", "leizypower_MainFrame", UIParent)
 leizypower_MainFrame:SetWidth(1)
 leizypower_MainFrame:SetHeight(1)
 leizypower_MainFrame:SetPoint("CENTER", UIParent, powerdatas.x, powerdatas.y)
@@ -41,30 +44,49 @@ leizypower_MainFrame:SetPoint("CENTER", UIParent, powerdatas.x, powerdatas.y)
 local power_txtFrame
 local power_txtString
 
+local power_BarFrame
+
+local curpower
+local maxpower = UnitPowerMax("player")
 
 
 
 function init_power()
     -- 初始化能量文字
     local _, ptoken = UnitPowerType("player")
-    power_txtFrame = CreateFrame("Frame", nil, leizypower_MainFrame)
+    power_txtFrame = CreateFrame("Frame", "power_txtFrame", leizypower_MainFrame)
     power_txtFrame:SetSize(1, 1)
     power_txtFrame:SetPoint("CENTER", leizypower_MainFrame)
     power_txtString = power_txtFrame:CreateFontString(nil, "ARTWORK")
     power_txtString:SetFont("Fonts\\ARHei.ttf", powerdatas.FontSize, "OUTLINE")
     power_txtString:SetPoint("CENTER", power_txtFrame, 2, 1)
     power_txtString:SetTextColor(powerdatas.powercolor[ptoken][1], powerdatas.powercolor[ptoken][2], powerdatas.powercolor[ptoken][3], 1)
+    -- 能量条
+    power_BarFrame = CreateFrame("StatusBar", "power_BarFrame", leizypower_MainFrame)
+    power_BarFrame:SetSize(powerdatas.barWidth, powerdatas.barHeight)
+    power_BarFrame:SetPoint("CENTER", leizypower_MainFrame, 0, -20)
+    power_BarFrame:SetStatusBarTexture("Interface\\Addons\\LeizyRune\\textures\\Flat2")
+
+    power_BarFrame:SetStatusBarColor(powerdatas.powercolor[ptoken][1], powerdatas.powercolor[ptoken][2], powerdatas.powercolor[ptoken][3], 1)
 end
 
 function setPowerTxT()
-    local curpower = UnitPower("player")
-    local maxpower = UnitPowerMax("player")
+    curpower = UnitPower("player")
+    maxpower = UnitPowerMax("player")
     power_txtString:SetText(curpower .. "/" .. maxpower)
 end
 
+function setPowerBar()
+    power_BarFrame:SetValue(curpower)
+    power_BarFrame:SetMinMaxValues(0, maxpower)
+end
+
 leizypower_MainFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "PLAYER_LOGIN" then
+    if event == "PLAYER_LOGIN"
+--            or event == "PLAYER_ENTERING_WORLD"
+    then
         init_power()
+--        maxpower = UnitPowerMax("player")
     elseif event == "PLAYER_REGEN_ENABLED" then
         UIFrameFadeIn(self, 1, 1.0, powerdatas.Alpha)
     elseif event == "PLAYER_REGEN_DISABLED" then
@@ -73,6 +95,9 @@ leizypower_MainFrame:SetScript("OnEvent", function(self, event, ...)
         UIFrameFadeIn(self, 1, powerdatas.Alpha, 0)
     elseif event == "PET_BATTLE_CLOSE" or event == "PLAYER_ENTERING_WORLD" then
         UIFrameFadeIn(self, 1, 0, powerdatas.Alpha)
+    elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
+--        maxpower = UnitPowerMax("player")
+--        power_BarFrame:SetMinMaxValues(0,UnitPowerMax("player"))
     end
 end)
 
@@ -86,4 +111,11 @@ leizypower_MainFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 leizypower_MainFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 leizypower_MainFrame:RegisterEvent("PET_BATTLE_CLOSE")
 
-leizypower_MainFrame:SetScript("OnUpdate", function() setPowerTxT() end)
+leizypower_MainFrame:SetScript("OnUpdate", function(_,elapsed)
+    update = update + elapsed
+    if update >= updatetime then
+        update = 0
+        setPowerTxT()
+        setPowerBar()
+    end
+end)

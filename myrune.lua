@@ -27,7 +27,7 @@ runedatas.FontSize = 22
 runedatas.CDs = { 0, 0, 0, 0, 0, 0 }
 runedatas.Color = { "|cff0CD809", "|cffE8DA0F", "|cffD80909" }
 
-local leizyrune_MainFrame = CreateFrame("Frame", nil, UIParent)
+local leizyrune_MainFrame = CreateFrame("Frame", "leizyrune_MainFrame", UIParent)
 leizyrune_MainFrame:SetWidth(1)
 leizyrune_MainFrame:SetHeight(1)
 leizyrune_MainFrame:SetPoint("CENTER", UIParent, "CENTER", runedatas.PositionX, runedatas.PositionY)
@@ -66,7 +66,7 @@ function init_rune()
     leizyrunes_runeCDTexts = {}
 
     for i = 1, 6 do
-        leizyrunes_runeFrames[i] = CreateFrame("Frame", nil, leizyrune_MainFrame)
+        leizyrunes_runeFrames[i] = CreateFrame("Frame", "leizyrunes_runeFrames"..i, leizyrune_MainFrame)
         leizyrunes_runeTextures[i] = leizyrunes_runeFrames[i]:CreateTexture(nil, "ARTWORK")
         leizyrunes_runeTextures[i]:SetTexture(setTextureOfSpec(getSpec()))
         leizyrunes_runeTextures[i]:SetPoint("CENTER", leizyrunes_runeFrames[i], 0, 0)
@@ -136,7 +136,7 @@ leizyrune_MainFrame:SetScript("OnEvent", function(_, event, _)
         elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
             setTextures()
         elseif event == "PLAYER_REGEN_ENABLED" then
-            UIFrameFadeIn(leizyrune_MainFrame, 1, 1.0, runedatas.Alpha)
+            UIFrameFadeIn(leizyrune_MainFrame, 1.0, 1, runedatas.Alpha)
         elseif event == "PLAYER_REGEN_DISABLED" then
             UIFrameFadeIn(leizyrune_MainFrame, 0.5, runedatas.Alpha, 1.0)
         elseif event == "PET_BATTLE_OPENING_START" then
