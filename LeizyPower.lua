@@ -33,8 +33,8 @@ powerdatas.powercolor = {
     ['POWER_TYPE_OOZE'] = { 0.76, 1, 0 },
     ['POWER_TYPE_BLOOD_POWER'] = { 0.7, 0, 1 },
 }
-powerdatas.barWidth = 180
-powerdatas.barHeight = 8
+powerdatas.barWidth = 170
+powerdatas.barHeight = 16
 
 local leizypower_MainFrame = CreateFrame("Frame", "leizypower_MainFrame", UIParent)
 leizypower_MainFrame:SetWidth(1)
@@ -65,7 +65,8 @@ function init_power()
     power_BarFrame = CreateFrame("StatusBar", "power_BarFrame", leizypower_MainFrame)
     power_BarFrame:SetSize(powerdatas.barWidth, powerdatas.barHeight)
     power_BarFrame:SetPoint("CENTER", leizypower_MainFrame, 0, -20)
-    power_BarFrame:SetStatusBarTexture("Interface\\Addons\\LeizyRune\\textures\\Flat2")
+    power_BarFrame:SetStatusBarTexture("Interface\\Addons\\LeizyRune\\textures\\power_bar")
+--    power_BarFrame:SetStatusBarTexture("Interface\\Addons\\TidyPlates_Neon\\Neon_Bar")
 
     power_BarFrame:SetStatusBarColor(powerdatas.powercolor[ptoken][1], powerdatas.powercolor[ptoken][2], powerdatas.powercolor[ptoken][3], 1)
 end
